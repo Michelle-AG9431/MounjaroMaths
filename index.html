@@ -3,13 +3,32 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>猛健樂精準計量測驗</title>
+    <title>猛健樂精準計量測驗 - 進階數學版</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        .correct-opt { background-color: #dcfce7 !important; border-color: #22c55e !important; color: #166534 !important; font-weight: 600; }
-        .missing-opt { background-color: #fef9c3 !important; border-color: #eab308 !important; color: #854d0e !important; font-weight: 600; }
-        .wrong-opt { background-color: #fee2e2 !important; border-color: #ef4444 !important; color: #991b1b !important; }
-        .option-label { transition: all 0.2s ease; }
+        /* 答對且選中：綠色 */
+        .correct-opt {
+            background-color: #dcfce7 !important;
+            border-color: #22c55e !important;
+            color: #166534 !important;
+            font-weight: 600;
+        }
+        /* 正解但漏選：黃色 */
+        .missing-opt {
+            background-color: #fef9c3 !important;
+            border-color: #eab308 !important;
+            color: #854d0e !important;
+            font-weight: 600;
+        }
+        /* 選錯：紅色 */
+        .wrong-opt {
+            background-color: #fee2e2 !important;
+            border-color: #ef4444 !important;
+            color: #991b1b !important;
+        }
+        .option-label {
+            transition: all 0.2s ease;
+        }
     </style>
 </head>
 <body class="bg-slate-50 min-h-screen py-8 px-4">
@@ -17,32 +36,28 @@
         <!-- 標題欄 -->
         <div class="bg-amber-600 p-8 text-white text-center">
             <h1 class="text-3xl font-bold">🧮 猛健樂精準計量測驗</h1>
-            <p class="mt-2 text-amber-100 opacity-90">專為計算愛好者設計：隨機抽考 10 題計算題</p>
+            <p class="mt-2 text-amber-100 opacity-90">進階挑戰：混合劑量、殘劑與轉次換算</p>
         </div>
 
         <div class="p-6 md:p-10">
-            <!-- 載入中狀態 -->
             <div id="loading" class="text-center py-20 text-slate-500">
                 <div class="animate-spin inline-block w-10 h-10 border-4 border-amber-500 border-t-transparent rounded-full mb-4"></div>
-                <p class="text-lg">正在讀取計量題庫...</p>
+                <p class="text-lg">正在讀取進階題庫...</p>
             </div>
 
-            <!-- 分數顯示區 -->
             <div id="result-area" class="hidden mb-10 p-8 bg-amber-50 rounded-2xl text-center border-2 border-amber-100 shadow-inner">
                 <div class="text-6xl font-black text-amber-600 mb-2" id="final-score">0</div>
                 <div class="text-xl font-bold text-amber-800" id="score-comment"></div>
             </div>
 
-            <!-- 題目流 -->
             <div id="quiz-flow" class="space-y-10"></div>
 
-            <!-- 控制按鈕 -->
             <div class="mt-12 flex flex-col sm:flex-row gap-4">
                 <button id="submit-btn" onclick="checkAnswers()" class="hidden w-full py-5 bg-amber-600 hover:bg-amber-700 text-white font-bold text-lg rounded-xl shadow-lg transition-all active:scale-95">
                     提交測驗並查看詳解
                 </button>
                 <button id="restart-btn" onclick="startTest()" class="hidden w-full py-5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-lg rounded-xl shadow-lg transition-all active:scale-95">
-                    重新抽取題目
+                    重新抽取 10 題
                 </button>
             </div>
         </div>
@@ -54,7 +69,6 @@
 
         async function init() {
             try {
-                // 從 math_quiz.json 讀取單選計算題
                 const res = await fetch('math_quiz.json');
                 if (!res.ok) throw new Error('找不到 math_quiz.json 檔案');
                 database = await res.json();
@@ -66,7 +80,6 @@
                     <div class="text-red-500 p-6 bg-red-50 rounded-xl">
                         <p class="text-xl font-bold">❌ 載入失敗</p>
                         <p class="mt-2 text-sm">${e.message}</p>
-                        <p class="mt-4 text-slate-500">請確認 math_quiz.json 檔案與此網頁放在同一個路徑。</p>
                     </div>`;
             }
         }
@@ -77,10 +90,8 @@
             document.getElementById('submit-btn').classList.remove('hidden');
             document.getElementById('restart-btn').classList.add('hidden');
             
-            // 直接從全部題目中隨機抽出 10 題
             const shuffled = [...database].sort(() => 0.5 - Math.random());
             currentTest = shuffled.slice(0, 10);
-            
             renderQuestions();
         }
 
@@ -90,19 +101,19 @@
             
             currentTest.forEach((q, i) => {
                 const card = document.createElement('div');
-                card.className = "bg-white border border-slate-200 rounded-2xl p-6 md:p-8 shadow-sm transition-all";
+                card.className = "bg-white border border-slate-200 rounded-2xl p-6 md:p-8 shadow-sm";
                 
                 card.innerHTML = `
                     <div class="flex items-center gap-4 mb-6">
-                        <span class="text-2xl font-black text-slate-300">#${i+1}</span>
-                        <span class="px-4 py-1.5 bg-amber-100 text-amber-700 border-amber-200 text-sm font-black rounded-lg border-2 shadow-sm uppercase tracking-wide">
-                            🧮 精準計量
+                        <span class="text-3xl font-black text-slate-300">#${i+1}</span>
+                        <span class="px-5 py-2 bg-amber-100 text-amber-700 border-2 border-amber-200 text-base font-black rounded-xl shadow-sm uppercase">
+                            🧮 計算挑戰
                         </span>
                     </div>
                     <div class="text-xl font-bold text-slate-800 mb-8 leading-relaxed">${q.q}</div>
                     <div class="space-y-4" id="opt-container-${i}"></div>
                     <div id="exp-${i}" class="hidden mt-8 p-6 bg-amber-50 border-l-8 border-amber-400 rounded-r-2xl">
-                        <div class="text-emerald-700 font-bold text-lg mb-3">正確答案：${q.options[q.answer]}</div>
+                        <div class="text-emerald-700 font-bold text-lg mb-3" id="correct-text-${i}"></div>
                         <div class="text-slate-700 leading-relaxed"><strong class="text-amber-700">【計算詳解】</strong><br>${q.rationale.replace(/\n/g, '<br>')}</div>
                     </div>
                 `;
@@ -112,12 +123,11 @@
                     const label = document.createElement('label');
                     label.className = "option-label flex items-center p-4 border-2 border-slate-100 rounded-xl cursor-pointer hover:bg-slate-50 hover:border-amber-200 group";
                     label.innerHTML = `
-                        <input type="radio" name="q${i}" value="${idx}" class="w-6 h-6 text-amber-600 border-slate-300 focus:ring-amber-500 rounded-full">
+                        <input type="radio" name="q${i}" value="${idx}" class="w-6 h-6 text-amber-600 border-slate-300 focus:ring-amber-500">
                         <span class="ml-4 text-slate-700 font-medium text-lg">${opt}</span>
                     `;
                     optBox.appendChild(label);
                 });
-                
                 flow.appendChild(card);
             });
         }
@@ -129,13 +139,19 @@
                 const checkedIdx = Array.from(inputs).find(input => input.checked);
                 const userVal = checkedIdx ? parseInt(checkedIdx.value) : -1;
                 
-                const isCorrect = userVal === q.answer;
+                // --- 關鍵修復：相容 數字 1 或 陣列 [1] 的格式 ---
+                const correctIndices = Array.isArray(q.answer) ? q.answer : [q.answer];
+                const isCorrect = correctIndices.includes(userVal);
+                
                 if (isCorrect) score++;
 
                 inputs.forEach((input, idx) => {
                     const label = input.parentElement;
-                    const isRightAnswer = idx === q.answer;
+                    const isRightAnswer = correctIndices.includes(idx);
                     const isUserChecked = input.checked;
+
+                    // 重置樣式
+                    label.classList.remove('correct-opt', 'missing-opt', 'wrong-opt');
 
                     if (isRightAnswer && isUserChecked) {
                         label.classList.add('correct-opt');
@@ -150,16 +166,18 @@
                     input.disabled = true;
                 });
 
+                // 更新詳解區的正確答案文字
+                const correctTextNames = correctIndices.map(idx => q.options[idx]).join('、');
+                document.getElementById(`correct-text-${i}`).innerText = `正確答案：${correctTextNames}`;
                 document.getElementById(`exp-${i}`).classList.remove('hidden');
             });
 
             document.getElementById('final-score').innerText = `${score * 10} / 100`;
-            document.getElementById('score-comment').innerText = score >= 8 ? "計算大師！您的邏輯非常嚴密！" : "數學是需要練習的，建議多看看計算詳解。";
+            document.getElementById('score-comment').innerText = score >= 8 ? "這計算量難不倒你！太強了！" : "有些細節沒注意到，看看詳解有助於理清邏輯。";
             
             document.getElementById('result-area').classList.remove('hidden');
             document.getElementById('submit-btn').classList.add('hidden');
             document.getElementById('restart-btn').classList.remove('hidden');
-            
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
@@ -167,3 +185,4 @@
     </script>
 </body>
 </html>
+
